@@ -92,6 +92,75 @@ This project simulates a network environment with:
 
 ---
 
+## 🎬 Video Tutorials
+
+### Part 1: Introduction & Setup
+<!-- Add your video link here -->
+**Video:** [Coming Soon / Add Your Link Here]
+
+What's covered:
+- Network topology overview
+- Device placement in Packet Tracer
+- Initial connections between devices
+
+---
+
+### Part 2: Router Configuration
+<!-- Add your video link here -->
+**Video:** [Coming Soon / Add Your Link Here]
+
+What's covered:
+- Configuring FastEthernet interfaces
+- Configuring Serial interfaces
+- Setting IP addresses
+- Clock rate configuration
+
+---
+
+### Part 3: NAT Configuration
+<!-- Add your video link here -->
+**Video:** [Coming Soon / Add Your Link Here]
+
+What's covered:
+- NAT inside/outside configuration
+- Access control lists
+- NAT overload (PAT)
+
+---
+
+### Part 4: Static Routing
+<!-- Add your video link here -->
+**Video:** [Coming Soon / Add Your Link Here]
+
+What's covered:
+- Adding static routes
+- Routing table verification
+- Next-hop configuration
+
+---
+
+### Part 5: PC Configuration
+<!-- Add your video link here -->
+**Video:** [Coming Soon / Add Your Link Here]
+
+What's covered:
+- Setting IP addresses on PCs
+- Subnet mask configuration
+- Default gateway setup
+
+---
+
+### Part 6: Testing & Verification
+<!-- Add your video link here -->
+**Video:** [Coming Soon / Add Your Link Here]
+
+What's covered:
+- Ping tests between networks
+- NAT translation verification
+- Troubleshooting tips
+
+---
+
 ## 📚 Step-by-Step Tutorial
 
 ### Step 1: Setting Up the Physical Topology
@@ -317,7 +386,7 @@ Router# write memory
 
 3. **Test all combinations:**
    - PC1 → PC3
-   - PC2 → PC5
+   - PC2 → PC6
    - PC4 → PC0
 
 ### Verify Router Configuration
@@ -329,6 +398,10 @@ Router# show ip interface brief
 Router# show ip route
 Router# show ip nat translations
 ```
+
+### 🎥 Video Demonstration
+<!-- Add your testing video link here -->
+**Video:** [Add Your Video Link Here]
 
 ---
 
