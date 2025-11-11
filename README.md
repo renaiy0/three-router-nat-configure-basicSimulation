@@ -1,391 +1,392 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAT Simulation - Video Tutorial</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+# NAT Simulation with 3 Routers
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            padding: 20px;
-        }
+A comprehensive Cisco Packet Tracer project demonstrating Network Address Translation (NAT) configuration across multiple routers with different network segments.
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+## 📋 Table of Contents
+- [Project Overview](#project-overview)
+- [Network Topology](#network-topology)
+- [Requirements](#requirements)
+- [Network Configuration](#network-configuration)
+- [Video Tutorials](#video-tutorials)
+- [Step-by-Step Tutorial](#step-by-step-tutorial)
+- [Testing & Verification](#testing--verification)
+- [Troubleshooting](#troubleshooting)
 
-        header {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
-            text-align: center;
-        }
+---
 
-        h1 {
-            color: #667eea;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
+## 🎯 Project Overview
 
-        .subtitle {
-            color: #666;
-            font-size: 1.2em;
-        }
+This project simulates a network environment with:
+- **3 Routers** interconnected in series
+- **3 Switches** (one per router)
+- **6 PCs** (2 PCs per switch)
+- **3 Network Segments** with different IP ranges
+- **NAT Configuration** for inter-network communication
 
-        .video-section {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
-        }
+### Network Segments:
+- **Network 1:** 10.10.10.0/24 (PC0, PC1)
+- **Network 2:** 20.20.20.0/24 (PC2, PC3)
+- **Network 3:** 30.30.30.0/24 (PC4, PC5)
 
-        .video-section h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.8em;
-            border-left: 5px solid #667eea;
-            padding-left: 15px;
-        }
+---
 
-        .video-section p {
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
+## 🗺️ Network Topology
 
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
+![Network Topology](topology.png)
 
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+```
+                40.40.40.1      40.40.40.2      50.50.50.1      50.50.50.2
+                   Se2/0  <────>  Se2/0           Se3/0  <────>  Se2/0
+                 Router-PT      Router-PT       Router-PT
+                 Router0        Router1         Router2
+                   Fa0/0          Fa0/0           Fa0/0
+                     |              |               |
+                   Fa2/1          Fa2/1           Fa2/1
+                     |              |               |
+                 Switch-PT      Switch-PT       Switch-PT
+                 Switch0        Switch1         Switch2
+               Fa1/1  Fa0/1   Fa1/1  Fa0/1   Fa1/1  Fa0/1
+                 |      |       |      |       |      |
+              PC0      PC1   PC2    PC3     PC4    PC6
+         10.10.10.0      20.20.20.0      30.30.30.0
+```
 
-        .video-placeholder {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            color: white;
-        }
+---
 
-        .video-placeholder svg {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 20px;
-            opacity: 0.8;
-        }
+## 💻 Requirements
 
-        .video-placeholder h3 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
+- **Cisco Packet Tracer** (version 7.0 or higher)
+- Basic knowledge of:
+  - IP addressing
+  - Router CLI commands
+  - NAT concepts
 
-        .video-placeholder p {
-            color: rgba(255,255,255,0.8);
-        }
+---
 
-        .steps-list {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
+## 🔧 Network Configuration
 
-        .steps-list h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
+### IP Address Scheme
 
-        .steps-list ul {
-            list-style: none;
-            padding-left: 0;
-        }
+#### End Devices (PCs)
 
-        .steps-list li {
-            padding: 10px 0;
-            padding-left: 30px;
-            position: relative;
-            color: #555;
-        }
+| Device | IP Address | Subnet Mask | Default Gateway |
+|--------|------------|-------------|-----------------|
+| PC0 | 10.10.10.2 | 255.255.255.0 | 10.10.10.1 |
+| PC1 | 10.10.10.3 | 255.255.255.0 | 10.10.10.1 |
+| PC2 | 20.20.20.2 | 255.255.255.0 | 20.20.20.1 |
+| PC3 | 20.20.20.3 | 255.255.255.0 | 20.20.20.1 |
+| PC4 | 30.30.30.2 | 255.255.255.0 | 30.30.30.1 |
+| PC6 | 30.30.30.3 | 255.255.255.0 | 30.30.30.1 |
 
-        .steps-list li:before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #667eea;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
+#### Router Interfaces
 
-        footer {
-            text-align: center;
-            color: white;
-            margin-top: 40px;
-            padding: 20px;
-        }
+| Router | Interface | IP Address | Connected To |
+|--------|-----------|------------|--------------|
+| Router0 | Fa0/0 | 10.10.10.1 | Switch0 (Fa2/1) |
+| Router0 | Se2/0 | 40.40.40.1 | Router1 (Se2/0) |
+| Router1 | Fa0/0 | 20.20.20.1 | Switch1 (Fa2/1) |
+| Router1 | Se2/0 | 40.40.40.2 | Router0 (Se2/0) |
+| Router1 | Se3/0 | 50.50.50.1 | Router2 (Se2/0) |
+| Router2 | Fa0/0 | 30.30.30.1 | Switch2 (Fa2/1) |
+| Router2 | Se2/0 | 50.50.50.2 | Router1 (Se3/0) |
 
-        footer a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
+---
 
-        footer a:hover {
-            text-decoration: underline;
-        }
+## 📚 Step-by-Step Tutorial
 
-        .badge {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
+### Step 1: Setting Up the Physical Topology
 
-        .topology-image {
-            width: 100%;
-            border-radius: 10px;
-            margin: 20px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🌐 NAT Simulation Video Tutorial</h1>
-            <p class="subtitle">Network Address Translation with 3 Routers - Complete Guide</p>
-            <div style="margin-top: 20px;">
-                <span class="badge">Cisco Packet Tracer</span>
-                <span class="badge">3 Routers</span>
-                <span class="badge">NAT Configuration</span>
-                <span class="badge">Static Routing</span>
-            </div>
-        </header>
+1. Open **Cisco Packet Tracer**
+2. Add the following devices:
+   - 3x **1941 Routers** (or similar)
+   - 3x **2960 Switches**
+   - 6x **PCs**
 
-        <!-- Network Topology Overview -->
-        <div class="video-section">
-            <h2>📊 Network Topology</h2>
-            <p>This simulation demonstrates a network with three separate subnets interconnected via routers using NAT and static routing.</p>
-            <!-- Add your topology image here -->
-            <img src="topology.png" alt="Network Topology" class="topology-image">
-            
-            <div class="steps-list">
-                <h3>Network Configuration:</h3>
-                <ul>
-                    <li><strong>Network 1:</strong> 10.10.10.0/24 (PC0, PC1) → Router0</li>
-                    <li><strong>Network 2:</strong> 20.20.20.0/24 (PC2, PC3) → Router1</li>
-                    <li><strong>Network 3:</strong> 30.30.30.0/24 (PC4, PC6) → Router2</li>
-                    <li><strong>Router Link 1:</strong> 40.40.40.0/24 (Router0 ↔ Router1)</li>
-                    <li><strong>Router Link 2:</strong> 50.50.50.0/24 (Router1 ↔ Router2)</li>
-                </ul>
-            </div>
-        </div>
+3. **Connect the devices:**
+   - Connect PC0 (Fa0) to Switch0 (Fa0/1)
+   - Connect PC1 (Fa0) to Switch0 (Fa1/1)
+   - Connect PC2 (Fa0) to Switch1 (Fa0/1)
+   - Connect PC3 (Fa0) to Switch1 (Fa1/1)
+   - Connect PC4 (Fa0) to Switch2 (Fa0/1)
+   - Connect PC6 (Fa0) to Switch2 (Fa1/1)
+   - Connect Switch0 (Fa2/1) to Router0 (Fa0/0)
+   - Connect Switch1 (Fa2/1) to Router1 (Fa0/0)
+   - Connect Switch2 (Fa2/1) to Router2 (Fa0/0)
+   - Connect Router0 (Se2/0) to Router1 (Se2/0) - *Link Network: 40.40.40.0/24*
+   - Connect Router1 (Se3/0) to Router2 (Se2/0) - *Link Network: 50.50.50.0/24*
 
-        <!-- Video 1: Introduction -->
-        <div class="video-section">
-            <h2>🎬 Part 1: Introduction & Setup</h2>
-            <p>Learn about the network topology and initial setup requirements for this NAT simulation project.</p>
-            <div class="video-container">
-                <!-- REPLACE THIS WITH YOUR VIDEO EMBED CODE -->
-                <!-- Example for YouTube: <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" allowfullscreen></iframe> -->
-                <div class="video-placeholder">
-                    <svg fill="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <h3>Video Coming Soon</h3>
-                    <p>Add your video embed code here</p>
-                </div>
-            </div>
-        </div>
+**See:** ROUTER0CLI.png, ROUTER1CLI.png, ROUTER2CLI.png
 
-        <!-- Video 2: Router Configuration -->
-        <div class="video-section">
-            <h2>⚙️ Part 2: Router Configuration</h2>
-            <p>Step-by-step guide to configuring Router0, Router1, and Router2 with proper interfaces and IP addresses.</p>
-            <div class="video-container">
-                <!-- REPLACE THIS WITH YOUR VIDEO EMBED CODE -->
-                <div class="video-placeholder">
-                    <svg fill="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <h3>Video Coming Soon</h3>
-                    <p>Add your video embed code here</p>
-                </div>
-            </div>
-            <div class="steps-list">
-                <h3>What you'll learn:</h3>
-                <ul>
-                    <li>Configure FastEthernet and Serial interfaces</li>
-                    <li>Set IP addresses for each interface</li>
-                    <li>Configure clock rates on serial connections</li>
-                    <li>Enable interfaces with "no shutdown" command</li>
-                </ul>
-            </div>
-        </div>
+---
 
-        <!-- Video 3: NAT Configuration -->
-        <div class="video-section">
-            <h2>🔒 Part 3: NAT Configuration</h2>
-            <p>Configure Network Address Translation (NAT) on all three routers to enable inter-network communication.</p>
-            <div class="video-container">
-                <!-- REPLACE THIS WITH YOUR VIDEO EMBED CODE -->
-                <div class="video-placeholder">
-                    <svg fill="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <h3>Video Coming Soon</h3>
-                    <p>Add your video embed code here</p>
-                </div>
-            </div>
-            <div class="steps-list">
-                <h3>What you'll learn:</h3>
-                <ul>
-                    <li>Configure NAT inside interfaces (LAN side)</li>
-                    <li>Configure NAT outside interfaces (WAN side)</li>
-                    <li>Set up access control lists (ACLs)</li>
-                    <li>Enable NAT overload (PAT)</li>
-                </ul>
-            </div>
-        </div>
+### Step 2: Configure PC IP Addresses
 
-        <!-- Video 4: Static Routing -->
-        <div class="video-section">
-            <h2>🛣️ Part 4: Static Routing Configuration</h2>
-            <p>Configure static routes to enable communication between all three networks through the routers.</p>
-            <div class="video-container">
-                <!-- REPLACE THIS WITH YOUR VIDEO EMBED CODE -->
-                <div class="video-placeholder">
-                    <svg fill="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <h3>Video Coming Soon</h3>
-                    <p>Add your video embed code here</p>
-                </div>
-            </div>
-            <div class="steps-list">
-                <h3>What you'll learn:</h3>
-                <ul>
-                    <li>Understand routing table concepts</li>
-                    <li>Add static routes using "ip route" command</li>
-                    <li>Configure next-hop addresses</li>
-                    <li>Verify routing with "show ip route"</li>
-                </ul>
-            </div>
-        </div>
+For each PC, click on the device → **Desktop** → **IP Configuration**
 
-        <!-- Video 5: PC Configuration -->
-        <div class="video-section">
-            <h2>💻 Part 5: PC Configuration</h2>
-            <p>Configure IP addresses, subnet masks, and default gateways on all six PCs in the network.</p>
-            <div class="video-container">
-                <!-- REPLACE THIS WITH YOUR VIDEO EMBED CODE -->
-                <div class="video-placeholder">
-                    <svg fill="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <h3>Video Coming Soon</h3>
-                    <p>Add your video embed code here</p>
-                </div>
-            </div>
-            <div class="steps-list">
-                <h3>What you'll learn:</h3>
-                <ul>
-                    <li>Configure static IP addresses on PCs</li>
-                    <li>Set correct subnet masks</li>
-                    <li>Configure default gateway for each network</li>
-                    <li>Verify IP configuration</li>
-                </ul>
-            </div>
-        </div>
+#### Network 1 (PCs connected to Router0):
+- **PC0:**
+  - IP Address: `10.10.10.2`
+  - Subnet Mask: `255.255.255.0`
+  - Default Gateway: `10.10.10.1`
 
-        <!-- Video 6: Testing -->
-        <div class="video-section">
-            <h2>✅ Part 6: Testing & Verification</h2>
-            <p>Test network connectivity and verify that NAT and routing are working correctly across all networks.</p>
-            <div class="video-container">
-                <!-- REPLACE THIS WITH YOUR VIDEO EMBED CODE -->
-                <div class="video-placeholder">
-                    <svg fill="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <h3>Video Coming Soon</h3>
-                    <p>Add your video embed code here</p>
-                </div>
-            </div>
-            <div class="steps-list">
-                <h3>What you'll learn:</h3>
-                <ul>
-                    <li>Use ping command to test connectivity</li>
-                    <li>Verify NAT translations with "show ip nat translations"</li>
-                    <li>Check routing tables on all routers</li>
-                    <li>Troubleshoot common connectivity issues</li>
-                </ul>
-            </div>
-        </div>
+- **PC1:**
+  - IP Address: `10.10.10.3`
+  - Subnet Mask: `255.255.255.0`
+  - Default Gateway: `10.10.10.1`
 
-        <!-- Video 7: Troubleshooting -->
-        <div class="video-section">
-            <h2>🔧 Part 7: Troubleshooting Common Issues</h2>
-            <p>Learn how to identify and fix common problems in NAT and routing configurations.</p>
-            <div class="video-container">
-                <!-- REPLACE THIS WITH YOUR VIDEO EMBED CODE -->
-                <div class="video-placeholder">
-                    <svg fill="white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <h3>Video Coming Soon</h3>
-                    <p>Add your video embed code here</p>
-                </div>
-            </div>
-            <div class="steps-list">
-                <h3>Common Issues Covered:</h3>
-                <ul>
-                    <li>Interfaces showing "down" status</li>
-                    <li>Incorrect gateway configuration</li>
-                    <li>NAT not translating addresses</li>
-                    <li>Routing loops or missing routes</li>
-                    <li>Serial connection clock rate issues</li>
-                </ul>
-            </div>
-        </div>
+#### Network 2 (PCs connected to Router1):
+- **PC2:**
+  - IP Address: `20.20.20.2`
+  - Subnet Mask: `255.255.255.0`
+  - Default Gateway: `20.20.20.1`
 
-        <footer>
-            <p>📚 For detailed written instructions, check the <a href="README.md">README.md</a> file</p>
-            <p style="margin-top: 10px;">🎓 Created for educational purposes - Cisco Packet Tracer Simulation</p>
-        </footer>
-    </div>
-</body>
-</html>
+- **PC3:**
+  - IP Address: `20.20.20.3`
+  - Subnet Mask: `255.255.255.0`
+  - Default Gateway: `20.20.20.1`
+
+#### Network 3 (PCs connected to Router2):
+- **PC4:**
+  - IP Address: `30.30.30.2`
+  - Subnet Mask: `255.255.255.0`
+  - Default Gateway: `30.30.30.1`
+
+- **PC6:**
+  - IP Address: `30.30.30.3`
+  - Subnet Mask: `255.255.255.0`
+  - Default Gateway: `30.30.30.1`
+
+---
+
+### Step 3: Configure Router0
+
+Click on Router0 → **CLI** tab and enter:
+
+```bash
+Router> enable
+Router# configure terminal
+
+# Configure interface connected to Switch0 (LAN)
+Router(config)# interface FastEthernet0/0
+Router(config-if)# ip address 10.10.10.1 255.255.255.0
+Router(config-if)# no shutdown
+Router(config-if)# exit
+
+# Configure serial interface connected to Router1
+Router(config)# interface Serial2/0
+Router(config-if)# ip address 40.40.40.1 255.255.255.0
+Router(config-if)# clock rate 64000
+Router(config-if)# no shutdown
+Router(config-if)# exit
+
+# Configure NAT
+Router(config)# interface FastEthernet0/0
+Router(config-if)# ip nat inside
+Router(config-if)# exit
+
+Router(config)# interface Serial2/0
+Router(config-if)# ip nat outside
+Router(config-if)# exit
+
+# Configure access list for NAT
+Router(config)# access-list 1 permit 10.10.10.0 0.0.0.255
+Router(config)# ip nat inside source list 1 interface Serial2/0 overload
+
+# Configure static routes
+Router(config)# ip route 20.20.20.0 255.255.255.0 40.40.40.2
+Router(config)# ip route 30.30.30.0 255.255.255.0 40.40.40.2
+
+# Save configuration
+Router(config)# end
+Router# write memory
+```
+
+---
+
+### Step 4: Configure Router1
+
+Click on Router1 → **CLI** tab and enter:
+
+```bash
+Router> enable
+Router# configure terminal
+
+# Configure interface connected to Switch1 (LAN)
+Router(config)# interface FastEthernet0/0
+Router(config-if)# ip address 20.20.20.1 255.255.255.0
+Router(config-if)# no shutdown
+Router(config-if)# exit
+
+# Configure serial interface connected to Router0
+Router(config)# interface Serial2/0
+Router(config-if)# ip address 40.40.40.2 255.255.255.0
+Router(config-if)# no shutdown
+Router(config-if)# exit
+
+# Configure serial interface connected to Router2
+Router(config)# interface Serial3/0
+Router(config-if)# ip address 50.50.50.1 255.255.255.0
+Router(config-if)# clock rate 64000
+Router(config-if)# no shutdown
+Router(config-if)# exit
+
+# Configure NAT
+Router(config)# interface FastEthernet0/0
+Router(config-if)# ip nat inside
+Router(config-if)# exit
+
+Router(config)# interface Serial2/0
+Router(config-if)# ip nat outside
+Router(config-if)# exit
+
+Router(config)# interface Serial3/0
+Router(config-if)# ip nat outside
+Router(config-if)# exit
+
+# Configure access list for NAT
+Router(config)# access-list 1 permit 20.20.20.0 0.0.0.255
+Router(config)# ip nat inside source list 1 interface Serial2/0 overload
+
+# Configure static routes
+Router(config)# ip route 10.10.10.0 255.255.255.0 40.40.40.1
+Router(config)# ip route 30.30.30.0 255.255.255.0 50.50.50.2
+
+# Save configuration
+Router(config)# end
+Router# write memory
+```
+
+---
+
+### Step 5: Configure Router2
+
+Click on Router2 → **CLI** tab and enter:
+
+```bash
+Router> enable
+Router# configure terminal
+
+# Configure interface connected to Switch2 (LAN)
+Router(config)# interface FastEthernet0/0
+Router(config-if)# ip address 30.30.30.1 255.255.255.0
+Router(config-if)# no shutdown
+Router(config-if)# exit
+
+# Configure serial interface connected to Router1
+Router(config)# interface Serial2/0
+Router(config-if)# ip address 50.50.50.2 255.255.255.0
+Router(config-if)# no shutdown
+Router(config-if)# exit
+
+# Configure NAT
+Router(config)# interface FastEthernet0/0
+Router(config-if)# ip nat inside
+Router(config-if)# exit
+
+Router(config)# interface Serial2/0
+Router(config-if)# ip nat outside
+Router(config-if)# exit
+
+# Configure access list for NAT
+Router(config)# access-list 1 permit 30.30.30.0 0.0.0.255
+Router(config)# ip nat inside source list 1 interface Serial2/0 overload
+
+# Configure static routes
+Router(config)# ip route 10.10.10.0 255.255.255.0 50.50.50.1
+Router(config)# ip route 20.20.20.0 255.255.255.0 50.50.50.1
+
+# Save configuration
+Router(config)# end
+Router# write memory
+```
+
+---
+
+## ✅ Testing & Verification
+
+### Test Connectivity
+
+1. **From PC0, ping PC2:**
+   - Open PC0 → Desktop → Command Prompt
+   - Type: `ping 20.20.20.2`
+   - You should receive replies
+
+2. **From PC0, ping PC4:**
+   - Type: `ping 30.30.30.2`
+   - You should receive replies
+
+3. **Test all combinations:**
+   - PC1 → PC3
+   - PC2 → PC5
+   - PC4 → PC0
+
+### Verify Router Configuration
+
+On each router, enter:
+
+```bash
+Router# show ip interface brief
+Router# show ip route
+Router# show ip nat translations
+```
+
+---
+
+## 🔍 Troubleshooting
+
+### Common Issues:
+
+**1. PCs cannot ping each other:**
+- Check if all router interfaces are "up/up": `show ip interface brief`
+- Verify static routes: `show ip route`
+- Check NAT configuration: `show ip nat translations`
+
+**2. Wrong gateway configuration:**
+- Ensure each PC's default gateway matches its router's LAN interface
+- Example: PC0's gateway should be 10.10.10.1 (Router0's Gig0/0)
+
+**3. NAT not working:**
+- Verify inside/outside interfaces are configured correctly
+- Check access-list permits the correct network
+- Use: `show ip nat statistics`
+
+**4. Routing issues:**
+- Verify static routes point to correct next-hop addresses
+- Ensure all networks are reachable: `show ip route`
+
+---
+
+## 📁 Project Files
+
+- `topology.png` - Network topology diagram
+- `ROUTER0CLI.png` - Router0 configuration screenshot
+- `ROUTER1CLI.png` - Router1 configuration screenshot
+- `ROUTER2CLI.png` - Router2 configuration screenshot
+- `cisco.pkt` - Packet Tracer project file
+
+---
+
+## 📖 Learning Objectives
+
+After completing this simulation, you will understand:
+- ✅ How to configure basic router interfaces
+- ✅ How to implement NAT (Network Address Translation)
+- ✅ How to configure static routing between multiple routers
+- ✅ How to troubleshoot inter-network connectivity
+- ✅ Difference between inside and outside NAT interfaces
+
+---
+
+## 🤝 Contributing
+
+Feel free to fork this project and submit improvements!
+
+---
+
+## 📝 License
+
+This project is for educational purposes.
+
+---
+
+**Note:** Make sure all interface names match your actual Packet Tracer configuration. This project uses **Serial interfaces (Se2/0, Se3/0)** for router-to-router connections and **FastEthernet (Fa0/0)** for router-to-switch connections. Don't forget to set the **clock rate** on the DCE side of serial connections!
