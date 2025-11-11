@@ -399,10 +399,6 @@ Router# show ip route
 Router# show ip nat translations
 ```
 
-### 🎥 Video Demonstration
-<!-- Add your testing video link here -->
-**Video:** [Add Your Video Link Here]
-
 ---
 
 ## 🔍 Troubleshooting
