@@ -1,4 +1,4 @@
-# NAT Simulation with 3 Routers
+# RIP Simulation with 3 Routers
 
 A comprehensive Cisco Packet Tracer project demonstrating Network Address Translation (NAT) configuration across multiple routers with different network segments.
 
